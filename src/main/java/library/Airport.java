@@ -37,9 +37,9 @@ public class Airport {
 
     private Airport initializeAirport() {
         String[] terminalNames = new String[]{"A", "B", "C", "D"};
-        int aircraftsCount = 125 + (int)((Math.random() - (double)0.5F) * (double)50.0F);
+        int aircraftsCount = 125 + (int) ((Math.random() - (double) 0.5F) * (double) 50.0F);
 
-        for(String terminalName : terminalNames) {
+        for (String terminalName : terminalNames) {
             Terminal terminal = new Terminal(terminalName);
 
             for(int i = 0; i < aircraftsCount; ++i) {
