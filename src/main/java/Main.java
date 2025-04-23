@@ -73,6 +73,7 @@ public class Main {
                 break;
             }
         }
+        //
 
         for (Flight currentFlight : specifiedTerminal.getFlights()) {
             if ((currentFlight.getType().equals(Flight.Type.ARRIVAL)) &&
