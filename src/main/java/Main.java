@@ -16,11 +16,10 @@ public class Main {
         System.out.println("Count all aircraft witch found model \"" + model + "\": " +
                 findCountAircraftWithModelAirbus(airport, model));
 
-//        System.out.println("\nList flights, which through two hours: ");
-//
-//        for (Flight currentFlight : findFlightsLeavingInTheNextHours(airport, 2)) {
-//            System.out.println("\"" + currentFlight + "\"");
-//        }
+        System.out.println("\nList flights, which through two hours: ");
+        for (Flight currentFlight : findFlightsLeavingInTheNextHours(airport, 2)) {
+            System.out.println("\"" + currentFlight + "\"");
+        }
 
         System.out.println("\nThe number of parked planes in each terminal: " +
                 findMapCountParkedAircraftByTerminalName(airport));
@@ -41,10 +40,29 @@ public class Main {
         return count;
     }
 
-//    public static List<Flight> findFlightsLeavingInTheNextHours(Airport airport, int hours) {
-//        //TODO Метод должен вернуть список отправляющихся рейсов в ближайшее количество часов.
-//
-//    }
+    public static List<Flight> findFlightsLeavingInTheNextHours(Airport airport, int hours) {
+        //TODO Метод должен вернуть список отправляющихся рейсов в ближайшее количество часов.
+        ZonedDateTime timeNow = Instant.now().atZone(ZoneId.of("Europe/Moscow"));
+        ZonedDateTime timeSpecifiedPeriod = timeNow.plusSeconds(3600 * hours);
+
+        System.out.println("Наст. вр: " + timeNow);
+        System.out.println("Конец вр: " + timeSpecifiedPeriod);
+        List<Flight> flightsLeavingInTheNextHours = new ArrayList<>();
+
+        for (int i = 0; i < airport.getTerminals().size(); i++) {
+            Terminal currentTerminal = airport.getTerminals().get(i);
+            for (Flight currentFlight : currentTerminal.getFlights()) {
+                ZonedDateTime timeCurrentFlight = currentFlight.getDate().atZone(ZoneId.of("Europe/Moscow"));
+                if ((timeCurrentFlight.isAfter(timeNow) || timeCurrentFlight.isEqual(timeNow))
+                        &&
+                        (timeCurrentFlight.isBefore(timeSpecifiedPeriod)) || timeCurrentFlight.isEqual(timeNow)) {
+                    flightsLeavingInTheNextHours.add(currentFlight);
+                }
+            }
+        }
+
+        return flightsLeavingInTheNextHours;
+    }
 
     public static Map<String, Integer> findMapCountParkedAircraftByTerminalName(Airport airport) {
         //TODO Метод должен вернуть словарь с количеством припаркованных самолетов в каждом терминале.
@@ -73,7 +91,6 @@ public class Main {
                 break;
             }
         }
-        //
 
         for (Flight currentFlight : specifiedTerminal.getFlights()) {
             if ((currentFlight.getType().equals(Flight.Type.ARRIVAL)) &&
