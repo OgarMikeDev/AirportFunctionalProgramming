@@ -33,11 +33,7 @@ public class Main {
         // подходят те самолеты, у которых name начинается со строки model
         int count = 0;
 
-        for (Aircraft currentAircraft : airport.getAllAircrafts()) {
-            if (currentAircraft.getModel().contains(model)) {
-                count++;
-            }
-        }
+
 
         return count;
     }
@@ -47,21 +43,7 @@ public class Main {
         ZonedDateTime zonedTimeNow = Instant.now().atZone(ZoneId.of("Europe/Moscow"));
         ZonedDateTime zonedTimePlusHours = zonedTimeNow.plusHours(hours);
 
-        List<Terminal> listTerminals = airport.getTerminals();
-        List<Flight> listFlightsLeavingInTheNextHours = new ArrayList<>();
-        for (Terminal currentTerminal : listTerminals) {
-            for (Flight currentFlight : currentTerminal.getFlights()) {
-                ZonedDateTime zonedTimeCurrentFlight = currentFlight.getDate().atZone(ZoneId.of("Europe/Moscow"));
-                if (currentFlight.getType().equals(Flight.Type.DEPARTURE) &&
-                        (zonedTimeCurrentFlight.isAfter(zonedTimeNow) ||
-                                zonedTimeCurrentFlight.isEqual(zonedTimeNow)) &&
-                        ((zonedTimeCurrentFlight.isBefore(zonedTimePlusHours) ||
-                                zonedTimeCurrentFlight.isEqual(zonedTimePlusHours)))
-                ) {
-                    listFlightsLeavingInTheNextHours.add(currentFlight);
-                }
-            }
-        }
+ 
         return listFlightsLeavingInTheNextHours;
     }
 
@@ -69,12 +51,7 @@ public class Main {
     public static Map<String, Integer> findMapCountParkedAircraftByTerminalName(Airport airport) {
         //TODO Метод должен вернуть словарь с количеством припаркованных самолетов в каждом терминале.
         Map<String, Integer> mapCountParkedAircraftByTerminalName = new HashMap<>();
-        List<Terminal> listTerminals = airport.getTerminals();
-        for (Terminal currentTerminal : listTerminals) {
-            String nameCurrentTerminal = currentTerminal.getName();
-            int countParkedAircrafts = currentTerminal.getParkedAircrafts().size();
-            mapCountParkedAircraftByTerminalName.put(nameCurrentTerminal, countParkedAircrafts);
-        }
+
         return mapCountParkedAircraftByTerminalName;
     }
 
@@ -83,24 +60,7 @@ public class Main {
         //TODO Найти ближайший прилет в указанный терминал.
         ZonedDateTime zonedTimeNow = Instant.now().atZone(ZoneId.of("Europe/Moscow"));
 
-        List<Terminal> listTerminals = airport.getTerminals();
-        Set<Flight> sortedFlights = new TreeSet<>();
-        for (Terminal currentTerminal : listTerminals) {
-            if (currentTerminal.getName().equals(terminalName)) {
-                for (Flight currentFlight : currentTerminal.getFlights()) {
-                    ZonedDateTime zonedTimeCurrentFlight = currentFlight.getDate().atZone(ZoneId.of("Europe/Moscow"));
-                    if (currentFlight.getType().equals(Flight.Type.ARRIVAL) &&
-                            zonedTimeCurrentFlight.isAfter(zonedTimeNow)
-                    ) {
-                        sortedFlights.add(currentFlight);
-                    }
-                }
-            }
-        }
 
-        for (Flight currentFlightArrival : sortedFlights) {
-            return currentFlightArrival;
-        }
         return null;
     }
 }
