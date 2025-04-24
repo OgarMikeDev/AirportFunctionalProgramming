@@ -32,48 +32,49 @@ public class Main {
         //TODO Метод должен вернуть количество самолетов указанной модели.
         // подходят те самолеты, у которых name начинается со строки model
         int count = 0;
+
         for (Aircraft currentAircraft : airport.getAllAircrafts()) {
-            if (currentAircraft.toString().contains(model)) {
+            if (currentAircraft.getModel().contains(model)) {
                 count++;
             }
         }
+
         return count;
     }
 
     public static List<Flight> findFlightsLeavingInTheNextHours(Airport airport, int hours) {
         //TODO Метод должен вернуть список отправляющихся рейсов в ближайшее количество часов.
-        ZonedDateTime timeNow = Instant.now().atZone(ZoneId.of("Europe/Moscow"));
-        ZonedDateTime timeSpecifiedPeriod = timeNow.plusSeconds(3600 * hours);
+        ZonedDateTime zonedTimeNow = Instant.now().atZone(ZoneId.of("Europe/Moscow"));
+        ZonedDateTime zonedTimePlusHours = zonedTimeNow.plusHours(hours);
 
-        System.out.println("Наст. вр: " + timeNow);
-        System.out.println("Конец вр: " + timeSpecifiedPeriod);
-        List<Flight> flightsLeavingInTheNextHours = new ArrayList<>();
-
-        for (int i = 0; i < airport.getTerminals().size(); i++) {
-            Terminal currentTerminal = airport.getTerminals().get(i);
+        List<Terminal> listTerminals = airport.getTerminals();
+        List<Flight> listFlightsLeavingInTheNextHours = new ArrayList<>();
+        for (Terminal currentTerminal : listTerminals) {
             for (Flight currentFlight : currentTerminal.getFlights()) {
-                ZonedDateTime timeCurrentFlight = currentFlight.getDate().atZone(ZoneId.of("Europe/Moscow"));
-                if ((timeCurrentFlight.isAfter(timeNow) || timeCurrentFlight.isEqual(timeNow))
-                        &&
-                        (timeCurrentFlight.isBefore(timeSpecifiedPeriod)) || timeCurrentFlight.isEqual(timeNow)) {
-                    flightsLeavingInTheNextHours.add(currentFlight);
+                ZonedDateTime zonedTimeCurrentFlight = currentFlight.getDate().atZone(ZoneId.of("Europe/Moscow"));
+                if (currentFlight.getType().equals(Flight.Type.DEPARTURE) &&
+                        (zonedTimeCurrentFlight.isAfter(zonedTimeNow) ||
+                                zonedTimeCurrentFlight.isEqual(zonedTimeNow)) &&
+                        ((zonedTimeCurrentFlight.isBefore(zonedTimePlusHours) ||
+                                zonedTimeCurrentFlight.isEqual(zonedTimePlusHours)))
+                ) {
+                    listFlightsLeavingInTheNextHours.add(currentFlight);
                 }
             }
         }
-
-        return flightsLeavingInTheNextHours;
+        return listFlightsLeavingInTheNextHours;
     }
+
 
     public static Map<String, Integer> findMapCountParkedAircraftByTerminalName(Airport airport) {
         //TODO Метод должен вернуть словарь с количеством припаркованных самолетов в каждом терминале.
         Map<String, Integer> mapCountParkedAircraftByTerminalName = new HashMap<>();
-
-        for (Terminal currentTerminal : airport.getTerminals()) {
-            String currentNameTerminal = currentTerminal.getName();
+        List<Terminal> listTerminals = airport.getTerminals();
+        for (Terminal currentTerminal : listTerminals) {
+            String nameCurrentTerminal = currentTerminal.getName();
             int countParkedAircrafts = currentTerminal.getParkedAircrafts().size();
-            mapCountParkedAircraftByTerminalName.put(currentNameTerminal, countParkedAircrafts);
+            mapCountParkedAircraftByTerminalName.put(nameCurrentTerminal, countParkedAircrafts);
         }
-
         return mapCountParkedAircraftByTerminalName;
     }
 
@@ -91,7 +92,7 @@ public class Main {
                     if (currentFlight.getType().equals(Flight.Type.ARRIVAL) &&
                             zonedTimeCurrentFlight.isAfter(zonedTimeNow)
                     ) {
-                       sortedFlights.add(currentFlight);
+                        sortedFlights.add(currentFlight);
                     }
                 }
             }
