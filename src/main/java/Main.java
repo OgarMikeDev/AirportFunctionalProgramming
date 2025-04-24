@@ -78,36 +78,28 @@ public class Main {
     }
 
 
-    public static ZonedDateTime findFirstFlightArriveToTerminal(Airport airport, String terminalName) {
+    public static Flight findFirstFlightArriveToTerminal(Airport airport, String terminalName) {
         //TODO Найти ближайший прилет в указанный терминал.
-        Terminal specifiedTerminal = null;
-        Instant specifiedInstant = Instant.now().atZone(ZoneId.of("Europe/Moscow")).toInstant();
-        List<Flight> listFlightsArrival = new ArrayList<>();
+        ZonedDateTime zonedTimeNow = Instant.now().atZone(ZoneId.of("Europe/Moscow"));
 
-
-        for (Terminal currentTerminal : airport.getTerminals()) {
+        List<Terminal> listTerminals = airport.getTerminals();
+        Set<Flight> sortedFlights = new TreeSet<>();
+        for (Terminal currentTerminal : listTerminals) {
             if (currentTerminal.getName().equals(terminalName)) {
-                specifiedTerminal = currentTerminal;
-                break;
+                for (Flight currentFlight : currentTerminal.getFlights()) {
+                    ZonedDateTime zonedTimeCurrentFlight = currentFlight.getDate().atZone(ZoneId.of("Europe/Moscow"));
+                    if (currentFlight.getType().equals(Flight.Type.ARRIVAL) &&
+                            zonedTimeCurrentFlight.isAfter(zonedTimeNow)
+                    ) {
+                       sortedFlights.add(currentFlight);
+                    }
+                }
             }
         }
 
-        for (Flight currentFlight : specifiedTerminal.getFlights()) {
-            if ((currentFlight.getType().equals(Flight.Type.ARRIVAL)) &&
-                    (currentFlight.getDate().isAfter(specifiedInstant))) {
-                listFlightsArrival.add(currentFlight);
-            }
+        for (Flight currentFlightArrival : sortedFlights) {
+            return currentFlightArrival;
         }
-
-        Set<Instant> setDates = new TreeSet<>();
-        for (Flight currentFlight : listFlightsArrival) {
-            setDates.add(currentFlight.getDate());
-        }
-
-        for (Instant currentDate : setDates) {
-            return currentDate.atZone(ZoneId.of("Europe/Moscow"));
-        }
-
-        return Instant.now().atZone(ZoneId.of("Europe/Moscow"));
+        return null;
     }
 }
