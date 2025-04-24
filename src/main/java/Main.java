@@ -44,7 +44,7 @@ public class Main {
         ZonedDateTime zonedTimePlusHours = zonedTimeNow.plusHours(hours);
 
  
-        return listFlightsLeavingInTheNextHours;
+        return null;
     }
 
 
